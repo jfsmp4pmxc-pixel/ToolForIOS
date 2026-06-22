@@ -1,0 +1,48 @@
+name: Build Empty iOS App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout mã nguồn
+      uses: actions/checkout@v3
+
+    - name: Thiết lập Xcode hiển thị phiên bản
+      run: |
+        sudo xcode-select -s /Applications/Xcode.app
+        xcodebuild -version
+
+    - name: Biên dịch ứng dụng (Build App không cần ký chứng chỉ)
+      run: |
+        xcodebuild -project Empty.xcodeproj \
+                   -scheme Empty \
+                   -configuration Release \
+                   -sdk iphoneos \
+                   CODE_SIGNING_ALLOWED=NO \
+                   CODE_SIGN_IDENTITY="" \
+                   PROVISIONING_PROFILE_SPECIFIER="" \
+                   clean build
+
+    - name: Đóng gói cấu trúc Payload thành file IPA hoàn chỉnh
+      run: |
+        mkdir -p Payload
+        # Tạo bản sao thư mục app sau khi biên dịch thành công vào cấu trúc Payload
+        if [ -d "build/Release-iphoneos/Empty.app" ]; then
+          cp -r build/Release-iphoneos/Empty.app Payload/
+        else
+          # Sửa đường dẫn nếu Xcode xuất file vào thư mục mặc định khác
+          cp -r ~/Library/Developer/Xcode/DerivedData/*/Build/Products/Release-iphoneos/Empty.app Payload/
+        fi
+        zip -r Empty.ipa Payload
+
+    - name: Xuất file IPA lên mục Artifacts của GitHub
+      uses: actions/upload-artifact@v3
+      with:
+        name: Empty-TrollStore-Edition
+        path: Empty.ipa
