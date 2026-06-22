@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout mã nguồn
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Thiết lập Xcode hiển thị phiên bản
       run: |
@@ -42,7 +42,7 @@ jobs:
         zip -r Empty.ipa Payload
 
     - name: Xuất file IPA lên mục Artifacts của GitHub
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Empty-TrollStore-Edition
         path: Empty.ipa
