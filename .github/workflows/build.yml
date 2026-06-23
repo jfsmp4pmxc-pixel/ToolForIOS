@@ -18,6 +18,16 @@ jobs:
         sudo xcode-select -s /Applications/Xcode.app
         xcodebuild -version
 
+    - name: Tạo Xcode project từ Swift Package
+      run: |
+        # Kiểm tra xem xcodeproj có tồn tại không
+        if [ ! -d "Empty.xcodeproj" ]; then
+          echo "Tạo Xcode project mới..."
+          swift package generate-xcodeproj --name Empty
+        else
+          echo "Xcode project đã tồn tại"
+        fi
+
     - name: Biên dịch ứng dụng (Build App không cần ký chứng chỉ)
       run: |
         xcodebuild -project Empty.xcodeproj \
